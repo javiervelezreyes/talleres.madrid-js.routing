@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Los Molinos del Ayer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/styles/style.css">
+    <script type="module" src="/assets/scripts/base.js"></script>
+</head>
+<body>
+    <web-router port="#port">
+        <web-route exp="/key/:key"       view="/post-key"></web-route>
+        <web-route exp="/title/:title"   view="/post-title"></web-route>
+        <web-route exp="/author/:author" view="/post-author"></web-route>
+        <web-route exp="/date/:date"     view="/post-date"></web-route>
+    </web-router>
+
+    <web-header></web-header>
+    
+    <web-port id="port"></web-port>
+    
+    <web-footer></web-footer>
+
+    <!-- 
+    http://127.0.0.1:8080/key/post-01 
+    http://127.0.0.1:8080/key/post-02
+    http://127.0.0.1:8080/key/post-03 
+    http://127.0.0.1:8080/key/post-04 
+
+    http://127.0.0.1:8080/title/como-cuidar-un-tulipan 
+    http://127.0.0.1:8080/title/el-camino-hacia-uno-mismo 
+    http://127.0.0.1:8080/title/surcando-la-misma-ola 
+    http://127.0.0.1:8080/title/una-mirada-al-horizonte
+    
+    http://127.0.0.1:8080/author/maria
+    http://127.0.0.1:8080/author/julian
+    http://127.0.0.1:8080/author/alberto
+    http://127.0.0.1:8080/author/olga
+
+    http://127.0.0.1:8080/date/250415
+    http://127.0.0.1:8080/date/250523
+    http://127.0.0.1:8080/date/250212
+    http://127.0.0.1:8080/date/250315
+    -->
+    
+</body>
+</html>

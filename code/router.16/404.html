@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página de Error</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+  <script type="module">
+    import History from '/assets/scripts/helpers/helper.history.js'
+
+    const EVENT  = 'DOMContentLoaded'
+    const INDEX  = '/index.html'
+    const BODY   = 'body'
+    const HTML   = 'innerHTML'
+    const SCRIPT = 'script'
+    const REF    = 'src'
+    const TEXT   = 'textContent'
+    const TYPE   = 'type'
+    const MODULE = 'module'
+    const PATH   = 'pathname'
+
+    let isInline = x => !!x[REF]
+
+    document.addEventListener (EVENT, function () {
+      doHtml ()
+        .then (doScripts)
+        .then (doPost)      
+    })
+
+    async function doHtml () {
+      let response = await fetch (INDEX)
+      let html     = await response.text ()
+      document.write (html)
+    }
+
+    function doScripts () {
+      let scripts = document.querySelectorAll (SCRIPT)
+      scripts.forEach (function (oScript) {
+        let script   = document.createElement (SCRIPT)
+        script[TYPE] = MODULE
+         isInline (oScript) && (script[REF]  = oScript[REF])
+        !isInline (oScript) && (script[TEXT] = oScript[TEXT])
+        document[BODY].appendChild (script)
+      })
+    }
+    
+    function doPost () {
+      setTimeout (function () {
+        let path = location[PATH]
+        History.set (path)
+      }, 100)
+    }
+</script>
+</body>
+</html>
