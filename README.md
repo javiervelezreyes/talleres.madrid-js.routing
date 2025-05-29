@@ -1,14 +1,14 @@
-# Desarrollo Orientado a Tareas en JavaScript
+# Modelos de Servicios en JavaScript
 
 ### Keywords
 
-JavaScript · Web · Components · Routing · Single Page Applications · Rendering
+JavaScript · Services · API · REST · Hypermedia
 
 ### Resumen
 
-Al desarrollar soluciones de front, de forma convencional solemos hacer uso de modelos de enrutamiento para crear experiencias integradas y cohesivas. Estas soluciones encapsulan no sólo una elaborada lógica de gestión de vistas, sino, adicionalmente, una apropiada estrategia que vincula cada vista con una URL diferente. Este tipo de artefactos se ha convertido en un elemento tan nuclear en el desarrollo web que, hoy en día, lo exponen como capacidad la mayoría de los frameworks de segunda generación, como Vue, React o Angular. Además, los frameworks de tercera generación, como NextJs, NuxtJs o Gatsby, exponen mejoras sustanciales al basar la lógica de enrutamiento en una actividad implícita que mimetiza la estructura de rutas dentro del árbol de páginas del proyecto.
+Convencionalmente, el diseño de APIs se ha establecido como una actividad formal sin demasiada contribución creativa. Los modelos más aplicados en la actualidad se limitan a exponer un modelo de infomación previamente diseñado en forma de puntos de entrada establecidos y un contrato uniforme. Esta aproximación resulta conveniente para obtener resultados homogeneos en el diseño de servicios. Sin embargo, no está exenta de problemas. En esencia se trata de una aproximación muy acoplada al modelo de información subyacente lo que genera frecuentes problemas en la gestión y mantenimiento del ciclo de vida y del versionado.
 
-Sin embargo, dado su enfoque encapsulado, poco se sabe de los internals de funcionamiento de este tipo de sistemas. A lo largo de esta charla, desarrollaremos en live coding un sistema de enrutamiento sencillo que nos permita ir descubriendo cada una de sus partes integrantes y secretos. Además, orientaremos el desarrollo de esta solución al uso de componentes web estándar, lo que nos permitirá no sólo conocer las peculiaridades que ello encierra, sino poner las mismas en retrospectiva comparativa con el funcionamiento de otras soluciones conocidas del mercado. Esta es, sin lugar a dudas, una charla que no te deberías perder.
+Las APIs deberían ser diseñadas como artefactos orientados a ser consumidas como un poceso de diálogo, de manera que los clientes fueran descubriendo sus capacidades de acuerdo a estrategias exploatorias lo que generaría modelos de solución mucho más dinámicos y adaptables a los cambios en los modelos de información subyacente. A lo largo de esta charla revisaremos los diferentes modelos de API que pueden ser aplicados en el diseño de servicios como un recorrido hasta centrarnos en un nuevo modelo de APIs centradas en el diálogo y presentaremos técnicas, mecanismos y patrones vinculadas a esta aproximación. Esta es, sin lugar a dudas, una charla que no te deberías perder.
 
 ### Biografía
 
@@ -16,10 +16,10 @@ Ingeniero Informático por la Universidad Politécnica de Madrid y Doctor en Inf
 
 ### Live Coding
 
-- Web Components
-- Routing & Gestión de Vistas
-- Routing & Gestión de Path
-- Routing Estático & Dinámico
+- Servicios Dirigidos por Procesos
+- Servicios Dirigidos por Modelos
+- Servicios Dirigidos por Contratos
+- Servicios Dirigidos por Dialogo
 
 ### Contacto
 

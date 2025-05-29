@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grupos Disponibles</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+</head>
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">Grupos Disponibles</h1>
+      <div id="groups" class="columns is-multiline"></div>
+    </div>
+  </section>
+
+  <template id="group">
+    <div class="column is-one-third">
+      <div class="card">
+        <div class="card-content">
+          <h1 class="title is-3 has-text-centered name"></h1>
+        </div>
+        <footer class="card-footer">
+          <a href="#" class="card-footer-item link">Explorar</a>
+        </footer>
+      </div>
+    </div>
+  </template>
+
+  <script type="module">
+    import Page     from './assets/scripts/helper.page.js'
+    import Services from './assets/scripts/helper.request.js'
+
+    const LOADED   = 'DOMContentLoaded'
+    const EGROUPS  = '#groups'
+    const EGROUP   = '#group'
+    const ENAME    = '.name'
+    const ELINK    = '.link'
+    const TEXT     = 'textContent'
+    const REF      = 'href'
+    const PATH     = '/groups'
+    const RESPONSE = 'response'
+    const GROUPS   = 'groups'
+    const HOST     = 'http://localhost:3000'
+
+    let Sessions = x => `page.sessions.html?group=${x}`
+
+    document.addEventListener (LOADED, async function () {
+      let $groups = Page.get (EGROUPS)
+      let $group  = Page.get (EGROUP)
+
+      try {
+        let services = Services (HOST)
+        let response = await services.get (PATH)
+        let groups   = response[RESPONSE][GROUPS]
+        for (let { key, group } of groups) {
+          let $node = Page.create ($group)
+          let $name = Page ($node).get (ENAME)
+          let $link = Page ($node).get (ELINK)
+          $name[TEXT] = group
+          $link[REF]  = Sessions (key)
+          Page ($groups).insert ($node)
+        }
+      } catch (e) {}
+    })
+  </script>
+</body>
+</html>

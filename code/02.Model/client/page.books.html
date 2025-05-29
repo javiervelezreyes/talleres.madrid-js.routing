@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Libros de la Serie</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+</head>
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">Libros de la Serie</h1>
+      <div id="books" class="columns is-multiline"></div>
+    </div>
+  </section>
+
+  <template id="book">
+    <div class="column is-one-third">
+      <div class="card">
+        <div class="card-content has-text-centered">
+          <h1 class="title is-3 name"></h1>
+          <h2 class="title is-5 serie"></h2>
+          <h2 class="title is-5 genre"></h2>
+        </div>
+        <footer class="card-footer">
+          <a href="#" class="card-footer-item buy">Comprar</a>
+          <a href="#" class="card-footer-item refund">Devolver</a>
+        </footer>
+      </div>
+    </div>
+  </template>
+
+  <script type="module">
+    import Page     from './assets/scripts/helper.page.js'
+    import Path     from './assets/scripts/helper.path.js'
+    import Services from './assets/scripts/helper.request.js'
+
+    const LOADED   = 'DOMContentLoaded'
+    const CLICK    = 'click'
+    const GENRE    = 'genre'
+    const SERIE    = 'serie'
+    const EBOOKS   = '#books'
+    const EBOOK    = '#book'
+    const ENAME    = '.name'
+    const ESERIE   = '.serie'
+    const EGENRE   = '.genre'
+    const EBUY     = '.buy'
+    const EREFUND  = '.refund'
+    const TEXT     = 'textContent'
+    const ACTION   = 'action'
+    const RETRIEVE = 'retrieve'
+    const PURCHASE = 'purchase'
+    const REFUND   = 'refund'
+    const RESPONSE = 'response'
+    const DATA     = 'data'
+    const BOOKS    = 'books'
+    const HOST     = 'http://localhost:3000'
+
+    let BPath    = (x, y)      => `/genre/${x}/serie/${y}/books`
+    let TPath    = (x, y, z)   => `/genre/${x}/serie/${y}/book/${z}`
+    let Purchase = x => _ => alert ('Libro correctamente comprado - ' + x)
+    let Refund   = x => _ => alert ('Libro correctamente devuelto - ' + x)
+
+    document.addEventListener (LOADED, async function () {
+      let IGenre  = Path.get (GENRE)
+      let ISerie  = Path.get (SERIE)
+      let $books  = Page.get (EBOOKS)
+      let $book   = Page.get (EBOOK)
+
+      try {
+        let services = Services (HOST)
+        let path     = BPath (IGenre, ISerie)
+        let response = await services.send (path, { [ACTION]: RETRIEVE })
+        let books    = response[RESPONSE][DATA][BOOKS]
+
+        for (let { key, title, serie, genre } of books) {
+          let $node   = Page.create ($book)
+          let $name   = Page($node).get (ENAME)
+          let $serie  = Page($node).get (ESERIE)
+          let $gender = Page($node).get (EGENRE)
+          let $buy    = Page($node).get (EBUY)
+          let $refund = Page($node).get (EREFUND)
+
+          $name[TEXT]   = title
+          $serie[TEXT]  = serie
+          $gender[TEXT] = genre
+
+          $buy.addEventListener (CLICK, async function () {
+            let path = TPath (IGenre, ISerie, key)
+            services
+              .send (path, { [ACTION]: PURCHASE })
+              .then (Purchase (title))
+          })
+
+          $refund.addEventListener (CLICK, async function () {
+            let path = TPath (IGenre, ISerie, key)
+            services
+              .send (path, { [ACTION]: REFUND })
+              .then (Refund (title))
+          })
+
+          Page($books).insert($node)
+        }
+      } catch (e) {}
+    })
+  </script>
+</body>
+</html>

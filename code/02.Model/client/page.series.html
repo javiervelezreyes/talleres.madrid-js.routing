@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Series del Género</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+</head>
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">Series del Género</h1>
+      <div id="series" class="columns is-multiline"></div>
+    </div>
+  </section>
+
+  <template id="serie">
+    <div class="column is-one-third">
+      <div class="card">
+        <div class="card-content">
+          <h1 class="title is-3 has-text-centered name"></h1>
+        </div>
+        <footer class="card-footer">
+          <a href="#" class="card-footer-item link">Explorar</a>
+        </footer>
+      </div>
+    </div>
+  </template>
+
+  <script type="module">
+    import Page     from './assets/scripts/helper.page.js'
+    import Path     from './assets/scripts/helper.path.js'
+    import Services from './assets/scripts/helper.request.js'
+
+    const LOADED   = 'DOMContentLoaded'
+    const GENRE    = 'genre'
+    const ESERIES  = '#series'
+    const ESERIE   = '#serie'
+    const ENAME    = '.name'
+    const ELINK    = '.link'
+    const TEXT     = 'textContent'
+    const REF      = 'href'
+    const ACTION   = 'action'
+    const RETRIEVE = 'retrieve'
+    const RESPONSE = 'response'
+    const DATA     = 'data'
+    const SERIES   = 'series'
+    const HOST     = 'http://localhost:3000'
+
+    let SPath = x      => `/genre/${x}/series`
+    let BPath = (x, y) => `page.books.html?genre=${x}&serie=${y}`
+
+    document.addEventListener (LOADED, async function () {
+      let IGenre  = Path.get (GENRE)
+      let $series = Page.get (ESERIES)
+      let $serie  = Page.get (ESERIE)
+
+      try {
+        let services = Services (HOST)
+        let path     = SPath (IGenre)
+        let response = await services.send (path, { [ACTION]: RETRIEVE })
+        let series   = response[RESPONSE][DATA][SERIES]
+        for (let { key, serie } of series) {
+          let $node = Page.create ($serie)
+          let $name = Page($node).get (ENAME)
+          let $link = Page($node).get (ELINK)
+          $name[TEXT] = serie
+          $link[REF]  = BPath (IGenre, key)
+          Page ($series).insert ($node)
+        }
+      } catch (e) {}
+    })
+  </script>
+</body>
+</html>

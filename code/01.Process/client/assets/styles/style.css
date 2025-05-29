@@ -1,0 +1,23 @@
+html, body {
+  height: 100%;
+}
+.full-height {
+  height: 100vh;
+}
+.centered {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.button + .button {
+  margin-top: 1rem;
+}
+.container {
+  width: 500px;
+  margin-top: 3rem;
+}
+.ok-button {
+  margin-top: 1.5rem;
+  text-align: center;
+}

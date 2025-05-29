@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo de Géneros</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+</head>
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">Géneros Disponibles</h1>
+      <div id="genres" class="columns is-multiline"></div>
+    </div>
+  </section>
+
+  <template id="genre">
+    <div class="column is-one-third">
+      <div class="card">
+        <div class="card-content">
+          <h1 class="title is-3 has-text-centered name"></h1>
+        </div>
+        <footer class="card-footer">
+          <a href="#" class="card-footer-item link">Explorar</a>
+        </footer>
+      </div>
+    </div>
+  </template>
+
+  <script type="module">
+    import Page     from './assets/scripts/helper.page.js'
+    import Services from './assets/scripts/helper.request.js'
+
+    const LOADED   = 'DOMContentLoaded'
+    const EGENRES  = '#genres'
+    const EGENRE   = '#genre'
+    const ENAME    = '.name'
+    const ELINK    = '.link'
+    const TEXT     = 'textContent'
+    const REF      = 'href'
+    const PATH     = '/genres'
+    const ACTION   = 'action'
+    const RETRIEVE = 'retrieve'
+    const RESPONSE = 'response'
+    const DATA     = 'data'
+    const GENRES   = 'genres'
+    const HOST     = 'http://localhost:3000'
+
+    let Series = x => `page.series.html?genre=${x}`
+
+    document.addEventListener (LOADED, async function () {
+      let $genres = Page.get (EGENRES)
+      let $genre  = Page.get (EGENRE)
+
+      try {
+        let services = Services (HOST)
+        let response = await services.send (PATH, { [ACTION] : RETRIEVE })
+        let genres   = response[RESPONSE][DATA][GENRES]
+        for (let {key, genre} of genres) {
+          let $node = Page.create ($genre)
+          let $name = Page ($node).get (ENAME)
+          let $link = Page ($node).get (ELINK)
+          $name[TEXT] = genre
+          $link[REF]  = Series (key)
+          Page ($genres).insert ($node)
+        }
+        
+      } 
+      catch (e) {}
+    })
+  </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPA Hypermedia</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+</head>
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 id="title" class="title has-text-centered">Título</h1>
+      <h2 id="lead" class="title is-4 has-text-centered">Subtítulo</h2>
+      <div id="main"></div>
+    </div>
+  </section>
+
+  <script type="module">
+    import Page     from './assets/scripts/helper.page.js'
+    import Services from './assets/scripts/helper.request.js'
+
+    const HOST       = 'http://localhost:3000'
+    const GET        = 'get'
+    const RESPONSE   = 'response'
+    const ETITLE     = '#title'
+    const ELEAD      = '#lead'
+    const EMAIN      = '#main'
+    const TITLE      = 'title'
+    const LEAD       = 'lead'
+    const LABEL      = 'label'
+
+    async function Link (path, method) {
+      try {
+        let action   = method && method.toLowerCase () || GET
+        let services = Services (HOST)
+        let response = await services[action](path)
+        render (response[RESPONSE])
+      } 
+      catch (error) {
+        console.error (error)
+      }
+    }
+
+    function render (response) {
+      let { archetype } = response
+      let { data      } = response
+      let { links     } = response
+
+      let $title = Page.get (ETITLE)
+      let $lead  = Page.get (ELEAD)
+      let $main  = Page.get (EMAIN)
+      Page.clear ($main)
+
+      let archetypes = {
+        grid () {
+          Page.set  ($title, data[TITLE])
+          Page.set  ($lead,  data[LEAD])
+          Page.html ($main, `
+            <div class="columns is-multiline">
+              ${ links.map (function (link) { 
+                let {label } = link
+                let {href  } = link
+                let {method} = link
+                return `
+                  <div class="column is-one-third">
+                    <div class="card">
+                      <div class="card-content">
+                        <p class="title is-5">${label}</p>
+                      </div>
+                      <footer class="card-footer">
+                        <a class="card-footer-item" onclick="Link('${href}', '${method}')">Acceder</a>
+                      </footer>
+                    </div>
+                  </div>
+                `}) }
+            </div>
+          `)
+        },
+
+        collection () {
+          Page.html ($main, `
+            <table class="table is-fullwidth">
+              <tbody>
+                ${data.map (function (item) { 
+                  let {label } = item
+                  let {href  } = item
+                  let {method} = item
+                  return `
+                    <tr>
+                      <td>${label}</td>
+                      <td>
+                        <button class="button is-info is-small" onclick="Link('${href}', '${method}')">
+                          Acceder
+                        </button>
+                      </td>
+                    </tr>`
+                  }) }
+              </tbody>
+            </table>
+            <div class="buttons">
+              ${links.map(function (link) { 
+                let {rel   } = link
+                let {href  } = link
+                let {method} = link
+                return `
+                  <button class="button is-small" onclick="Link('${href}', '${method}')">
+                    ${rel}
+                  </button>`
+              })}
+            </div>
+          `)
+        },
+
+        entity () {
+          Page.html ($main, `
+            <div class="card">
+              <div class="card-content">
+                <table class="table is-fullwidth">
+                  <tbody>
+                    ${Object.entries(data).map(function ([key, value]) { 
+                      return `
+                        <tr>
+                          <td><strong>${key}</strong></td>
+                          <td>${value}</td>
+                        </tr>`
+                    }) }
+                  </tbody>
+                </table>
+              </div>
+              <footer class="card-footer">
+                ${links.map (function (link) {
+                  let {label } = link
+                  let {href  } = link
+                  let {method} = link
+                  return `
+                    <a class="card-footer-item" onclick="Link('${href}', '${method}')">
+                      ${label}
+                    </a>
+                  `}) }
+              </footer>
+            </div>
+          `
+        )}
+      }
+
+      archetypes[archetype] ()
+    }
+
+    window.Link = Link
+    Link ('/')
+  </script>
+</body>
+</html>

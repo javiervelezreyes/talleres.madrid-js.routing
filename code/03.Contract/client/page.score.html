@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sesión</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+</head>
+<body>
+  <section class="section">
+    <div class="container">
+      <div id="session" class="card" style="max-width: 600px; margin: auto;">
+        <div class="card-content">
+          <h1 class="title is-4 group"></h1>
+          <h2 class="title is-5 name"></h2>
+          <p  class="title is-6 score"></p>
+        </div>
+        <footer class="card-footer">
+          <form id="vote-form" class="card-footer-item" style="width: 100%;">
+            <div class="field is-grouped is-grouped-centered" style="width: 100%;">
+              <div class="control">
+                <div class="select">
+                  <select name="score" id="score-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option selected ="5">5</option>
+                  </select>
+                </div>
+              </div>
+              <div class="control">
+                <button class="button is-link" type="submit">Puntuar</button>
+              </div>
+            </div>
+          </form>
+        </footer>
+      </div>
+    </div>
+  </section>
+
+  <script type="module">
+    import Page     from './assets/scripts/helper.page.js'
+    import Path     from './assets/scripts/helper.path.js'
+    import Services from './assets/scripts/helper.request.js'
+
+    const HOST      = 'http://localhost:3000'
+    const LOADED    = 'DOMContentLoaded'
+    const SUBMIT    = 'submit'
+    const GROUP     = 'group'
+    const SESSION   = 'session'
+    const KEY       = 'key'
+    const TITLE     = 'title'
+    const SCORE     = 'score'
+    const RESPONSE  = 'response'
+    const MESSAGE   = 'message'
+    const ESESSION  = '#session'
+    const ENAME     = '.name'
+    const EGROUP    = '.group'
+    const ESCORE    = '.score'
+    const FORM      = '#vote-form'
+    const SELECT    = '#score-select'
+    const TEXT      = 'textContent'
+    const VALUE     = 'value'
+    const FSESSION  = 'No se pudo cargar la sesión'
+    const FSCORE    = 'Error al enviar puntuación'
+    const SSCORE    = 'Puntuación enviada con éxito'
+    const SEP       = ' - ' 
+
+    let group   = Path.get (GROUP)
+    let session = Path.get (SESSION)
+    let rPath   = `/group/${group}/session/${session}`
+    let sPath   = `/group/${group}/session/${session}/score`
+    let Score   = x => `Score: ${session[SCORE]}` 
+
+    document.addEventListener (LOADED, async function () {
+      let $card   = Page.get (ESESSION)
+      let $name   = Page ($card).get (ENAME)
+      let $group  = Page ($card).get (EGROUP)
+      let $score  = Page ($card).get (ESCORE)
+      let $form   = Page.get (FORM)
+
+      try {
+        let services = Services (HOST)
+        let response = await services.get (rPath)
+        let session  = response[RESPONSE][SESSION]
+
+        $name[TEXT]  = session[TITLE]
+        $group[TEXT] = session[GROUP][GROUP]
+        $score[TEXT] = Score (session)
+
+        $form.addEventListener (SUBMIT, async function (event) {
+          try {
+            event.preventDefault ()
+            let score    = Page.getInt (SELECT)
+            let response = await services.post (sPath, { score })
+            alert (SSCORE + SEP + response[RESPONSE][SESSION][SCORE])
+          } 
+          catch (e) { alert (FSCORE) }
+        })
+      } 
+      catch (e) { alert (FSESSION) }
+    })
+  </script>
+</body>
+</html>

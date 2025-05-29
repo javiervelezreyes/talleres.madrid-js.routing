@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sesiones del Grupo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+</head>
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title" id="group-name">Sesiones</h1>
+      <div id="sessions" class="columns is-multiline"></div>
+    </div>
+  </section>
+
+  <template id="session">
+    <div class="column is-one-third">
+      <div class="card">
+        <div class="card-content">
+          <h1 class="title is-5 name"></h1>
+          <p class="title is-6 score"></p>
+        </div>
+        <footer class="card-footer">
+          <a href="#" class="card-footer-item link">Puntuar</a>
+        </footer>
+      </div>
+    </div>
+  </template>
+
+  <script type="module">
+    import Page     from './assets/scripts/helper.page.js'
+    import Path     from './assets/scripts/helper.path.js'
+    import Services from './assets/scripts/helper.request.js'
+
+    const HOST      = 'http://localhost:3000'
+    const LOADED    = 'DOMContentLoaded'
+    const EGROUP    = '#group-name'
+    const ESESSION  = '#session'
+    const ESESSIONS = '#sessions'
+    const ENAME     = '.name'
+    const ESCORE    = '.score'
+    const ELINK     = '.link'
+    const TEXT      = 'textContent'
+    const REF       = 'href'
+    const PARAM     = 'group'
+    const RESPONSE  = 'response'
+    const GROUP     = 'group'
+    const SESSIONS  = 'sessions'
+    const TITLE     = 'title'
+    const SCORE     = 'score'
+    const KEY       = 'key'
+    const SEP       = ' '
+
+    let key   = Path.get (PARAM)
+    let rPath = `/group/${key}/sessions`
+    let sPath = `/group/${key}/session`
+
+    let Score = x => `Score: ${x[SCORE]}`
+    let Link  = x => `page.score.html?group=${x[GROUP][KEY]}&session=${x[KEY]}`
+
+    document.addEventListener (LOADED, async function () {
+      let $group    = Page.get (EGROUP)
+      let $sessions = Page.get (ESESSIONS)
+      let $session  = Page.get (ESESSION)
+
+      try {
+        let services = Services (HOST)
+        let response = await services.get (rPath)
+        let sessions = response[RESPONSE][SESSIONS]
+
+        $group[TEXT] = $group[TEXT] + SEP + sessions[0][GROUP][GROUP]
+
+        for (let session of sessions) {
+          let $node  = Page.create($session)
+          let $name  = Page ($node).get (ENAME)
+          let $score = Page ($node).get (ESCORE)
+          let $link  = Page ($node).get (ELINK)
+
+          $name[TEXT]  = session[TITLE]
+          $score[TEXT] = Score (session) 
+          $link[REF]   = Link  (session)
+          Page ($sessions).insert ($node)
+        }
+      } catch (e) {}
+    })
+  </script>
+</body>
+</html>

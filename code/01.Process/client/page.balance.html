@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Withdraw</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+  <link rel="stylesheet" href="/assets/styles/style.css">
+</head>
+<body>
+  <section class="section">
+    <div class="container content">
+      <h1 class="title has-text-centered">Extracto de Efectivo</h1>
+
+      <form>
+        <div class="field">
+          <label class="label">Account</label>
+          <div class="control">
+            <input class="input account">
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="control">
+            <button type="submit" class="button is-link is-fullwidth">Aceptar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <template id="success">
+    <h1 class="title has-text-centered">Extracto Realizado con éxito</h1>
+    <div class="card">
+      <div class="card-content">
+        <div class="content">
+          <p class="message"></p>
+          <table>
+            <tr>
+              <th colspan="2">Details</th>
+            </tr>
+            <tr>
+              <td>Account</td>
+              <td><span class="account"></span></td>
+            </tr>
+            <tr>
+              <td>Balance</td>
+              <td><span class="balance"></span></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="ok-button">
+      <a href="index.html" class="button is-link is-fullwidth">OK</a>
+    </div>
+  </template>
+
+  <template id="error">
+    <div class="notification is-light">
+      <strong>Error</strong> - <span class="message"></span><br>
+      <small class="details"></small>
+    </div>
+    <div class="ok-button">
+      <a href="index.html" class="button is-link is-fullwidth">OK</a>
+    </div>
+  </template>
+
+  <script type="module">
+    import Page     from './assets/scripts/helper.page.js'
+    import Services from './assets/scripts/helper.request.js'
+
+    const EVENT    = 'submit'
+    const FORM     = 'form'
+    const ECONTENT = '.content'
+    const EMESSAGE = '.message'
+    const EACCOUNT = '.account'
+    const EBALANCE = '.balance'
+    const EDETAILS = '.details'
+    const ESUCCESS = '#success'
+    const EERROR   = '#error'
+    const ACTION   = 'action'
+    const DATA     = 'data'
+    const BALANCE  = 'balance'
+    const TYPE     = 'type'
+    const SUCCESS  = 'success'
+    const ERROR    = 'error'
+    const REQUEST  = 'Request failed'
+    const UNKNOWN  = 'Unknown error'
+    const NONE     = ''
+    const HOST     = 'http://localhost:3000'
+
+    let $form    = Page.get (FORM)
+    let $content = Page.get (ECONTENT)
+
+    $form.addEventListener (EVENT, async function (event) {
+      try {
+        event.preventDefault ()
+        let account  = Page.getText (EACCOUNT)
+        let services = Services (HOST)
+        let response = await services.send ({
+          [ACTION] : BALANCE,
+          [DATA]   : { account }
+        })
+
+        isSuccess (response) && Success (response)
+        isFail    (response) && Fail    (response)
+      } 
+      catch (error) {}
+    })
+
+    function isSuccess (response) { return response[TYPE] == SUCCESS } 
+    function isFail    (response) { return response[TYPE] == ERROR   } 
+
+    function Success (result) {
+      let { message  } = result
+      let { response } = result
+      let { data     } = response
+
+      let $template = Page.get (ESUCCESS)
+      let $node     = Page.create ($template)
+      let $message  = Page ($node).get (EMESSAGE)
+      let $account  = Page ($node).get (EACCOUNT)
+      let $balance  = Page ($node).get (EBALANCE)
+
+      Page.set   ($message, message)
+      Page.set   ($account, data.account)
+      Page.set   ($balance, data.balance)
+      Page.clear ($content)
+      Page ($content).insert ($node)
+    }
+
+    function Fail (result) {
+      let message = result.message || UNKNOWN
+      let details = result.response?.data?.error || NONE
+
+      let $template = Page.get (EERROR)
+      let $node     = Page.create ($template)
+      let $message  = Page ($node).get (EMESSAGE)
+      let $details  = Page ($node).get (EDETAILS)
+
+      Page.set   ($message, message)
+      Page.set   ($details, details)
+      Page.clear ($content)
+      Page ($content).insert ($node)
+    }
+  </script>
+</body>
+</html>
